@@ -1,0 +1,87 @@
+Core func987654321963258741000121314151 for the protocol 
+adaption, component management and event mechanism. 
+Southbound, northbound, eastbound and westbound interfaces 
+are the major protocols which need adaption. The network 
+functionality layer is responsible for the message exchange 
+among containers, management over network topology and 
+virtual network, and it provides basic routing forwarding 
+strategy. Besides, a programming interface, by which the 
+upper level application can finish the network resource 
+management towards lower level network resources, is 
+provided by the controller to upper level service. 
+The integral routing capabilities of the network are 
+supported by the SDN controller to realize the message 
+exchange with IP network. Beside the integral routing 
+function, the SDN controller also provides an experiment and 
+innovation platform for existing routing protocols such as 
+quality of service, multi-path routing, self-adaptive routing, ID 
+and location recognition and cross-layer routing.The SDN controller, which provides a centralized 
+programming interface, is a logically consolidated platform in 
+charge of the management of the network resource. In this 
+paper, we propose a SDN controller system based on Docker 
+to provide routing function for the network. 
+Authorized licensed use limited to: National Chiao Tung Univ.. Downloaded on January 14,2022 at 01:51:02 UTC from IEEE Xplore. Restrictions apply.
+The SDN controller system is composed of Docker engine, 
+basic module, application module and REST application 
+module, shown in Fig. 3. The resource distribution and 
+isolation are realized by Docker engine; basic function is 
+implemented by the basic module; network function and 
+standard REST API interface are provided by application 
+module; and the REST application module provides control 
+over lower level network. The functions of different 
+components are illustrated in Table. 2. 
+With the SDN controller system based on Docker, we can 
+implement the delivery and deployment rapidly according to 
+the demands to the network and save a large number of time in 
+development, testing and deployment. Because Docker is a 
+kernel-level virtualization, the proposed SDN controller 
+system can get great performance and efficiency, strong ability 
+of migration and extension. Therefore, the users can move the 
+applications from one platform to another directly. 
+V. NETWORK VIRTUALIZATION BY USING SDN
+CONTROLLER
+In this subsection, network virtualization is carried out by 
+using SDN controller based on Docker. 
+First, we build the virtualization platform for the 
+management of the whole network with SDN controllers. An 
+image of the SDN controller is built according to the specific 
+demands to the network. Then the controller image is accessed 
+to create the Docker container on the hardware platform. After 
+that, the SDN controller applications start to run on the 
+Docker container. 
+Second, abstraction and virtualization are operated on the 
+physical network resources. As shown in Fig. 4, based on the 
+different needs of users and services to the network, the SDN 
+controller platform abstracts the control function of each 
+virtual network, and then divides the underlying network into 
+two virtual networks, each with one SDN controller. Each 
+SDN controller runs one corresponding flow table for each 
+virtual network. The virtualization of topology, node resource 
+and link resource are carried out by using SDN controllers. 
+The topology virtualization is to implement the mapping 
+between the virtual nodes and links in the virtual network of 
+the tenants and the physical ones. Abstraction and 
+virtualization of the resources such as node flow tables and 
+CPU are realized by the node resource virtualization. The link 
+resource virtualization is presented for the virtualization of 
+available bandwidth and queue resources. 
+Third, the isolation of the control plane from the data plane 
+is carried out to ensure noninterference among different SDN 
+controllers and isolation among different virtual networks.The 
+control plane isolation protects the running SDN controller 
+from the effect of other controllers to ensure the independent 
+use of virtualization resource for the tenants. The isolation of 
+the resources on the data plane such as CPU, flow tables, link 
+bandwidth and port queue is got by the data plane isolation. 
+And the address isolation makes the address space freely for 
+the tenants without interference. 
+In the application shown in Fig. 4, the SDN controllers, 
+each of which is corresponding with a virtual network, 
+implement the control over underlying virtual network. The 
+corresponding SDN controller will handle the register events 
+(such as packet-in, datapath-joint, etc.) received from the 
+lower level SDN switches. The SDN controller platform also 
+processes the routing protocol data packets received from the 
+eastbound and the westbound interfaces. After that, the lower 
+level SDN switches will add, delete or update the flow tables 
+according to the decisions of the SDN controller platform.
