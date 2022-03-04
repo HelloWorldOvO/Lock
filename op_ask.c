@@ -8,11 +8,11 @@
 #define FILE "./test.txt"
 #define READ_LEN 1032
 
-void ERROR_DEAL(int error){
+void ERROR(int error){
     switch (error)
     {
     case 1/* input more than three argument */:
-        printf("more than three argument\n");
+        printf("you can't enter more than three argument\n");
         break;
     case 2/* operator more thar one char */:
         printf("you can just input operator r (read) or w (write)\n");
@@ -26,9 +26,14 @@ void ERROR_DEAL(int error){
     case 5/* part over the file */:
         printf("the part to operate of the file is over the file\n");
         break;
-    case 6:
+    case 6/* the words you input is over the size you expect */:
+        printf("you can't write so many words \n");
         break;
-    
+    case 7/* pos and size is not valid interger */:
+        printf("your input pos and size can just be interger\n");
+        break;
+    case 8:
+        break;
 
     default:
         break;
@@ -78,7 +83,6 @@ int deal_three_input(char *input_str, int str_length, char *foperator, int *fpos
             }
         }
     }
-    printf("cml:%s\n",input_str);
 
     if(space_num > 2){
         error = 1; // more than three argument
@@ -95,17 +99,27 @@ int deal_three_input(char *input_str, int str_length, char *foperator, int *fpos
     }
 
     for(i=space1+1;i<space2;i++){ // get the pos str
+        if(!isdigit(input_str[i])){ // pos is not valid interger
+            error = 7;
+            return error;
+        }
         temp[0] = input_str[i];
         strcat(str_pos,temp);
     }
-
-    *fpos = atoi(str_pos); // sranslate pos str to int
+    
 
     for(i=space2+1;i<str_length;i++){ // get the pos str
+        if(!isdigit(input_str[i])){ // ize is not valid interger
+            error = 7;
+            return error;
+        }
         temp[0] = input_str[i];
         strcat(str_size,temp);
     }
+
+    *fpos = atoi(str_pos); // sranslate pos str to int
     *fsize = atoi(str_size);
+
     return error;
 }
 
@@ -157,41 +171,80 @@ int read_op(int fpos, int fsize){
     return error;
 }
 
+
+int write_op(int fpos, int fsize){
+    int error = 0; // error flag
+    int file_len = 0; 
+    char write_line[READ_LEN] =""; // the data will be write
+    int write_fd = open(FILE,O_RDWR|O_CREAT);
+
+    if(write_fd < 0){ // file open error
+        error = 3;
+        return error;
+    }
+    if(fpos < 0 || fsize <= 0){ // pos and size error
+        error = 4;
+        return error;
+    }
+
+    printf("input no more than %d word\n",fsize);
+    printf("input>");
+    scanf ("%[^\n]%*c", write_line); //input data you want to write
+
+    if(strlen(write_line) > fsize){ // write to much word
+        error = 6;
+        return error;
+    }
+    
+    file_len = (int)lseek(write_fd,fpos -1,SEEK_SET);// move cursor to the word front of the word you want to write first
+    write(write_fd,write_line,fsize);//file write
+
+    close(write_fd);
+    return error;
+}
+
 int main(){
     int error_num = 0;
-    char input_line[MAXINPUT] = "";
-    char *input = input_line;
-    int input_length;
-    char operator;
-    int pos,size;
+    char command_input[MAXINPUT] = ""; // the command will be enter
+    char *input = command_input; // point to the command
+    int input_length; // the command's legnth
+    char operator;  // the operation type
+    int pos; // location of the file to operate
+    int size; // size of the block to operate
 
     while(1){
-        printf("input : [r/w] [pos] [size] \n");
-        scanf ("%[^\n]%*c", input_line); //input command
-        input_length = strlen(input_line); // get length of input
+        printf("\n");
+        printf("input format : [operator (r/w)] [pos] [size] \n");
+        printf("input>");
+        scanf ("%[^\n]%*c", command_input); //input command
+        input_length = strlen(command_input); // get length of input
 
         remove_space(input,input_length); //remove input's space
-        input_length = strlen(input_line);
+        input_length = strlen(command_input);
 
         error_num = deal_three_input(input, input_length, &operator, &pos, &size); // put all value to all operator
-        memset(&input_line[0], 0, sizeof(input_line));
+        memset(&command_input[0], 0, sizeof(command_input));
         if(error_num != 0){
-            ERROR_DEAL(error_num);
+            ERROR(error_num);
             error_num = 0;
             continue;
         }
 
-        if(operator == 'r'){ // if need to read file
+        if(operator == 'r'){ // if the operation is read file
             error_num = read_op(pos, size);
             if(error_num != 0){
-                ERROR_DEAL(error_num);
+                ERROR(error_num);
+                error_num = 0;
+                continue;
+            }
+        }else if(operator == 'w'){ // if the operation is write file
+            error_num = write_op(pos, size);
+            if(error_num != 0){
+                ERROR(error_num);
                 error_num = 0;
                 continue;
             }
         }
-        
-        
-
     }
 
     return 0;
